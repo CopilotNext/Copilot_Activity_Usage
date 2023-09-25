@@ -65,3 +65,8 @@
 - - [Bug Fix] 修改默认返回的seat数字，默认是1页，每页50个用户，修改为200个；url = f'https://api.github.com/orgs/{org}/copilot/billing/seats?per_page=200'
 
 
+## Update Notes in 2023/9/25
+
+- [Feature] 修改为从data/orgs.csv文件读取信息
+- [Feature] 修改了删除，增加组织的操作，方便用户配置
+

@@ -8,7 +8,7 @@ The app also has a configuration page where new organizations can be added.
 The app runs a background thread that periodically fetches the latest seat usage data from an API.
 """
 
-# FILEPATH: c:\work\FY24\Case\Lilith\seat-usage\app.py
+
 import time
 from flask import Flask, render_template, send_file,request, session
 import pandas as pd

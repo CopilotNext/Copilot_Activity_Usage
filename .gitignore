@@ -13,5 +13,6 @@ data/*
 !data/orgs.csv
 
 # Ignore the "static" directory and all files in it
+# Ignore the "static" directory and all files in it, except for PNG images
 static/*
-!static/active_users_byday.png
+!static/*.png

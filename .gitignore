@@ -8,9 +8,10 @@ venv/
 logs/
 logs/*
 
-# Ignore the "data" directory and all files in it, except for the "data.txt" file
+# Ignore the "data" directory and all files in it, except for the "orgs.csv" file
 data/*
-!data/data.txt
+!data/orgs.csv
 
 # Ignore the "static" directory and all files in it
 static/*
+!static/active_users_byday.png

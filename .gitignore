@@ -1,0 +1,16 @@
+# Ignore the "venv" directory
+venv/
+
+# Ignore all files with the ".pyc" extension
+*.pyc
+
+# Ignore the "logs" directory and all files in it
+logs/
+logs/*
+
+# Ignore the "data" directory and all files in it, except for the "data.txt" file
+data/*
+!data/data.txt
+
+# Ignore the "static" directory and all files in it
+static/*

@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Activity Report for {{ org }}<</title>
+    <style>
+        .container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            margin: 20px;
+        }
+        .section {
+            flex-basis: 30%;
+            margin: 10px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            text-align: center;
+        }
+        .title {
+            font-size: 24px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        .chart {
+            margin: 10px;
+            display: inline-block;
+            max-width: 100%;
+            height: auto;
+        }
+    </style>
+</head>
+<body>
+    <center><h1>Activity Report for {{ org }}</h1></center>
+    <div class="container">
+        <div class="section">
+            <div class="title">IDE Usage - IDE</div>
+            <div class="chart">
+                <img src="../static/{{ org }}/{{ org }}_IDE_Bar.png" alt="IDE Usage - Bar Chart">
+            </div>
+            <div class="chart">
+                <img src="../static/{{ org }}/{{ org }}_IDE_Pie.png" alt="IDE Usage - Pie Chart">
+            </div>
+        </div>
+        <div class="section">
+            <div class="title">IDE Usage - Copilot-Feature</div>
+            <div class="chart">
+                <img src="../static/{{ org }}/{{ org }}_Copilot-Feature_Bar.png" alt="IDE Usage - Bar Chart">
+            </div>
+            <div class="chart">
+                <img src="../static/{{ org }}/{{ org }}_Copilot-Feature_Pie.png" alt="IDE Usage - Pie Chart">
+            </div>
+        </div>
+        <div class="section">
+            <div class="title">IDE Usage - Login</div>
+            <div class="chart">
+                <img src="../static/{{ org }}/{{ org }}_Login_Bar.png" alt="IDE Usage - Bar Chart">
+            </div>
+            <div class="chart">
+                <img src="../static/{{ org }}/{{ org }}_Login_Pie.png" alt="IDE Usage - Pie Chart">
+            </div>
+        </div>
+    </div>
+    <a href="/">Return to Main Page</a>
+</body>
+</html>

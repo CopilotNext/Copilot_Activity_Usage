@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Last Activity Report</title>
+    <style>
+        table {
+            border-collapse: collapse;
+            width: 100%;
+            margin-bottom: 20px;
+        }
+        th, td {
+            text-align: left;
+            padding: 8px;
+            border: 1px solid #ddd;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        img {
+            max-width: 100%;
+            height: auto;
+            margin-bottom: 20px;
+        }
+    </style>
+</head>
+<body>
+    <center><h1>Last Activity Report for {{ org }}</h1></center>
+
+    <h2>Last Activity Usage</h2>
+        <h3>总分配人数是  {{ row_count }} </h3>
+        <h3>当前在使用人数是  {{ row_count_not_null }}</h3>
+        
+        <h3>当前使用率如下报表：</h3>
+        <div style="display: flex; flex-direction: row;">
+            <div style="flex: 1;">
+                <img src="../static/{{ org }}/{{ org }}_Last_Activity_usage.png" alt="Last Activity Usage">
+            </div>
+            <div style="flex: 1;">
+                <h2>分配后，未使用过Copilot的用户</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>Login</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for index, row in login_null_data.iterrows() %}
+                        <tr>
+                            <td>{{ loop.index }}</td>
+                            <td>{{ row['Login'] }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    <h2>Last Activity before  7 Days</h2>
+    <table>
+        <thead>
+            <tr>
+                <th>Login</th>
+                <th>Last Activity Date</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for index, row in login_data.iterrows() %}
+            <tr>
+                <td>{{ row['Login'] }}</td>
+                <td>{{ row['Last Activity Date'] }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <a href="/">Return to Main Page</a>
+</body>
+</html>

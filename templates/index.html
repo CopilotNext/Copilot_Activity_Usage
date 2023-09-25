@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <center><title>IDE Counts of Organization {{ org }}</title></center>
+</head>
+<body>
+    
+        <h1>please select the Organization</h1>
+        <form method="Post" action="/">
+            <label for="org">Select Organization:</label>
+            <select id="org" name="org">
+                {% for org in orgs %}
+                <option value="{{ org }}" {% if org == selected_org %}selected{% endif %}>{{ org }}</option>
+                {% endfor %}
+            </select>
+            <input type="submit" value="Submit">
+        </form>
+        <p>Current Selected Organization: <span id="selected-org">{{ selected_org }}</span></p>
+        <script>
+            // 获取下拉框元素
+            var select = document.getElementById('org');
+            // 监听下拉框的change事件
+            select.addEventListener('change', function() {
+                // 获取选择的组织值
+                var org = select.value;
+                // 将选择的组织值传递给Flask应用程序中的全局变量org
+                // fetch('/set_org?org=' + org);
+                // 更新页面上的选择的组织值
+                document.getElementById('selected-org').textContent = org;
+            });
+        </script>
+    
+    <center><h1>Daily active users of Organization {{ selected_org }}</h1></center>
+    <ul class="nav nav-tabs justify-content-center mb-3" id="myTab" role="tablist">
+        <!-- <li class="nav-item">
+            <a class="nav-link active" id="bar-tab" data-toggle="tab" href="#bar" role="tab" aria-controls="bar" aria-selected="true">Bar Chart</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link" id="pie-tab" data-toggle="tab" href="#pie" role="tab" aria-controls="pie" aria-selected="false">Pie Chart</a>
+        </li> -->
+        <li><a href="/report">Latest Activity Report</a></li>
+        <li><a href="/active_report">Active Report for last 30 days</a></li>
+        <li><a href="/Last_activity_report">Last Activity  Report analysis </a></li>
+        <li><a href="/config">config Organizations</a></li>
+        <a href="/" class="btn btn-primary mt-3">Return to Main Page</a>
+
+    </ul>
+    <!-- 显示图片 -->
+
+    <center><img src="static/{{ selected_org }}/{{ selected_org }}_active_users_byday.png" alt="Active Users By Day"></center>
+
+</body>
+    
+</html>
+

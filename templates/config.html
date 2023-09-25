@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Configuration</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+</head>
+<body>
+    <div name="List Organizations "> 
+    <h1>List Organizations</h1>
+    <table class="table table-striped table-sm" style="border: 1px solid black;">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Action</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for org in orgs %}
+            <tr>
+                <td>{{ org }}</td>
+                <td>
+                    <form method="POST" action="/delete_org">
+                        <input type="hidden" name="org" value="{{ org }}">
+                        <button type="submit" class="btn btn-danger">Delete</button>
+                    </form>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    </div>
+
+    <div name="Add Organization">
+        <h2>Add Organization</h2>
+        <form method="POST" action="/config">
+            <div style="display: flex; flex-direction: column;">
+                <label for="org" style="margin-bottom: 10px;">Organization Name:</label>
+                <input type="text" id="org" name="org" required maxlength="20" style="margin-bottom: 20px; text-align: center;">
+            </div>
+            <div style="display: flex; flex-direction: column;">
+                <label for="access_code" style="margin-bottom: 10px;">Access Code:</label>
+                <input type="text" id="access_code" name="access_code" required maxlength="20" style="margin-bottom: 20px; text-align: center;">
+            </div>
+            <div style="display: flex; flex-direction: column;">
+                <label for="Refresh_Frequence" style="margin-bottom: 10px;">Refresh Frequency (Hours):</label>
+                <input type="number" id="Refresh_Frequence" name="Refresh_Frequence" min="1" max="24" value="1" style="margin-bottom: 20px; text-align: center;">
+            </div>
+            <div style="display: flex; flex-direction: column;">
+                <label for="log_days" style="margin-bottom: 10px;">Log Retention (Days):</label>
+                <input type="number" id="log_days" name="log_days" min="1" max="365" value="30" style="margin-bottom: 20px; text-align: center;">
+            </div>
+            <input type="submit" value="Add">
+        </form>
+    </div>
+
+    <a href="/" class="btn btn-primary mt-3">Return to Main Page</a>
+
+    <script>
+        // Send a POST request to delete the organization when the delete button is clicked
+        $('form').submit(function(event) {
+            event.preventDefault();
+            var form = $(this);
+            $.ajax({
+                type: form.attr('method'),
+                url: form.attr('action'),
+                data: form.serialize(),
+                success: function() {
+                    location.reload();
+                }
+            });
+        });
+    </script>
+</body>
+</html>

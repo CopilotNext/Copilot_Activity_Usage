@@ -21,6 +21,7 @@ The app runs a background thread that periodically fetches the latest seat usage
 ## Installation
 
 - pip install requirements.txt
+- open app.py, run it
 - then visit http://localhost:5000, select config to add your organizations.
 
 ## Usage

@@ -1,6 +1,5 @@
-# Project Name
+# Copilot_Activity_Usage_Report
 
-A brief description of your project.
 quick report for Github Copilot for business usage in organizations.
 
 it is a quick usage report since there is no outofbox usage report in Github Organizations.
@@ -33,6 +32,9 @@ The app runs a background thread that periodically fetches the latest seat usage
 ![alt text](static/mian.png "Main (Index) Page")
 
 ![alt text](static/config-orgs.png "Config (Add/Remove) Orgs")
+
+![alt text](static/Copilot-Feature_Bar.png "Copilot-Feature_Bar")
+
 
 ## Examples
 

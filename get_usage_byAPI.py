@@ -5,17 +5,6 @@ import datetime
 import pandas as pd
 import os
 
-# Set the access token and organization name
-
-#org = 'your-org'
-#access_token = 'gph_,,,'
-
-# headers = {
-#     'Authorization': f'token {access_token}',
-#     'Accept': 'application/vnd.github.v3+json',
-#     'X-GitHub-Api-Version': '2022-11-28'
-# }
-# 提取当前时间到变量，以便后面使用
 now = datetime.datetime.now()
 
 # 写一个函数，根据org名字，获得这个org下所有分配copilot的信息

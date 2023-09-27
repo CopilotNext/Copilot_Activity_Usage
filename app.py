@@ -195,8 +195,11 @@ def get_latest_data():
         get_usage_byAPI.extract_copilot_by_orgs(orgs_info)
       
         # 每10分钟刷新依次，这一个以后可以修改为从配置文件中读取；现在为了测试，暂时设置为10分钟
+        #time.sleep(10 * 60)
+        # 修改为每12个小时刷新一次， updated by zhuang 2023/9/27
+        time.sleep(12 * 60 * 60)
 
-        time.sleep(10 * 60)
+
 
 if __name__ == '__main__':
     #启动job线程

@@ -200,7 +200,6 @@ def get_latest_data():
         time.sleep(12 * 60 * 60)
 
 
-
 if __name__ == '__main__':
     #启动job线程
     job_thread = Thread(target=get_latest_data)

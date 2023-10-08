@@ -70,3 +70,10 @@
 - [Feature] 修改为从data/orgs.csv文件读取信息
 - [Feature] 修改了删除，增加组织的操作，方便用户配置
 
+## Update Notes in 2023/10/9
+
+- [Feature] Add venv support for python project
+- [Feature] use pip freeze to generate requirements.txt (update compitable between flask 3.0 and Werkzeug 3.0)
+- [Feature] Add docker support for python flask project
+
+

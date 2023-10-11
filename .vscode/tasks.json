@@ -36,22 +36,8 @@
 			"dependsOn": [
 				"docker-build"
 			],
-			"dockerRun": {
-				"env": {
-					"FLASK_APP": "app.py"
-				}
-			},
 			"python": {
-				"args": [
-					"run",
-					"--no-debugger",
-					"--no-reload",
-					"--host",
-					"0.0.0.0",
-					"--port",
-					"5002"
-				],
-				"module": "flask"
+				"file": "refresh_orgs_job.py"
 			}
 		}
 	]

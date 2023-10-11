@@ -30,7 +30,7 @@ The app runs a background thread that periodically fetches the latest seat usage
 - 
 ![alt text](static/active_users_byday.png "Activy report by Day")
 
-![alt text](static/mian.png "Main (Index) Page")
+![alt text](static/main.png "Main (Index) Page")
 
 ![alt text](static/config-orgs.png "Config (Add/Remove) Orgs")
 
@@ -41,6 +41,9 @@ The app runs a background thread that periodically fetches the latest seat usage
 
 - Provide examples of how to use your project.
 - To check more report, please access http://localhost:5000/active_report
+- To check more report, please access https://copilotreport.chinacloudsites.cn/
+
+
 
 ## API Reference
 
@@ -57,7 +60,7 @@ The app runs a background thread that periodically fetches the latest seat usage
 
 ## Authors
 
-- List the authors of your project and their contact information.
+- JunQian Zhuang. Daniel Wang.
 
 ## Acknowledgments
 

@@ -1,0 +1,32 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: copilot-activity-usage
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: copilot-activity-usage
+  template:
+    metadata:
+      labels:
+        app: copilot-activity-usage
+    spec:
+      containers:
+      - name: copilot-activity-usage
+        image: copilot.azurecr.cn/copilot_activity_usage:2023101005
+        ports:
+        - containerPort: 5002
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: copilot-activity-usage
+spec:
+  selector:
+    app: copilot-activity-usage
+  ports:
+  - name: http
+    port: 80
+    targetPort: 5002
+  type: LoadBalancer

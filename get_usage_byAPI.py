@@ -39,7 +39,7 @@ def get_copilot_by_org(org='YourOrgName',access_token='youraccesscode'):
         return None
     
     # Print the response
-    print("response was got successfully")
+    print(f"response was got successfully for org: {org}")
     # 返回response
     return response.json()
 
@@ -51,8 +51,13 @@ def get_copilot_by_org(org='YourOrgName',access_token='youraccesscode'):
  # csv文件的名字orgname开头，后面跟上日期时间（到分钟级别），比如{orgname}_202108250933.csv
 
 def extract_copilot_by_org(org,access_token):
+
     # 调用get_copilot_by_org函数，获得response
-    data = get_copilot_by_org(org,access_token)
+    try:
+        data = get_copilot_by_org(org,access_token)
+    except:
+        print(f'Error: get_copilot_by_org failed, org is {org},pls check your access_token')
+        return None
      
     # Check if the data is valid
     if data is None or 'total_seats' not in data or 'seats' not in data:
@@ -92,6 +97,7 @@ def write_assignees_to_csv(assignees,org='YourOrgName'):
     # 判断data目录下是否有{org}目录，如果没有，就创建一个
     try:
         os.mkdir(f'data/{org}')
+        os.mkdir(f'static/{org}')
     except FileExistsError:
         pass
 
@@ -107,19 +113,19 @@ def write_assignees_to_csv(assignees,org='YourOrgName'):
     
     # 调用generate_last_csv，保存最近一次的数据到{org}_last_activity.csv，以便后续报表分析
     generate_last_csv(filename)
-    # 调用generate_process_csv函数，产生一个新的csv文件，文件名是{org}_{now}_active.csv ，
+    # 调用generate_process_csv函数，产生一个新的csv文件，主要是删除掉Last Activity Date 是空的行；文件名是{org}_{now}_active.csv ，
     generate_process_csv(filename)
 
-    # 调用merge_process_csv函数，把filename文件内容合并到{org}_activity.csv文件中
-    
+    # 调用merge_process_csv函数，把filename文件内容合并到{org}_active.csv文件中,以保存所有的使用记录到一个文件中
     merge_process_csv(filename[:-4] + '_active.csv')
 
     # 调用generate_details_bysplit函数，把filename文件的“Last Editor Used”列，分拆为“IDE”等4列，拆分后的文件名是filename后面加上-details
     generate_details_bysplit(filename[:-4] + '_active.csv')
 
-    # 调用merge_process_csv函数，把filename文件内容合并到{org}_active_details.csv文件中
+    # 调用merge_process_csv函数，把filename文件内容合并到{org}_active_details.csv文件中，其内容和{org}_active.csv文件内容一样，只是把Last Editor used 列多了4列
     merge_process_split_csv(filename[:-4] + '_active_details.csv')
 
+    # To-do:后续计划做一个导出功能，主要就是导出{org}_active_details.csv文件内容到excel文件中，然后可以对excel文件进行分析
     return None
 
 def get_lastactivity_by_username(username,org='YourOrgName'):

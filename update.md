@@ -70,10 +70,28 @@
 - [Feature] 修改为从data/orgs.csv文件读取信息
 - [Feature] 修改了删除，增加组织的操作，方便用户配置
 
-## Update Notes in 2023/10/9
+## Update Notes in 2023/10/8
 
 - [Feature] Add venv support for python project
 - [Feature] use pip freeze to generate requirements.txt (update compitable between flask 3.0 and Werkzeug 3.0)
 - [Feature] Add docker support for python flask project
+
+## Update Notes in 2023/10/9
+- [Bug Fix] fix bug that only 20 limit for access code in webapge
+- [Feature] Add K8S support
+- [Feature] Add More logs for debug, especially for jobs 
+
+## Update Notes in 2023/10/10
+- [Feature] Create both /data and /static folder when not exist
+- [Feature] add a scheduler to run job every 6 hours in refresh_orgs_job.py
+- [Feature] add Dockerfile-job to run job in docker container
+- [Feature] Azure File Share support for app/data and app/static (both for App Service and Container App), it is referring to https://docs.microsoft.com/en-us/azure/app-service/configure-connect-to-azure-storage?pivots=container-linux#mount-file-share; and https://learn.microsoft.com/en-us/azure/container-apps/storage-mounts?pivots=azure-portal
+
+## Update Notes in 2023/10/11
+- [Feature] update templates/index.html to be more friendly (remove go to main page , As itself is main page)
+- [Feature] update templates/config.html to be use local /JS and /CSS files, instead of using online version, to save time for loading
+
+
+
 
 

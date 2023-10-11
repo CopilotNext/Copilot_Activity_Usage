@@ -175,8 +175,36 @@ def delete_org():
     orgs_manager.delete_org(org)
     return f'Organization {org} deleted successfully!'
 
-import time
-import get_usage_byAPI
+@app.route('/refresh', methods=['GET', 'POST'])
+def refresh():
+
+    # 增加try,except,finally语句，以便在刷新数据的过程中，如果出现异常，也可以返回主页面
+    try:
+        print('Start to manually refresh Orgs at ' + time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()) )
+
+    # 刷新获取最新的数据；刷新过程，请显示一个进度条
+    # 首先刷新数据；刷新过程中，显示一个进度条
+        orgs_manager_latest = OrgsManager('data/orgs.csv')
+        orgs_info = orgs_manager_latest.get_orgs_info()
+        get_usage_byAPI.extract_copilot_by_orgs(orgs_info)
+
+        # 显示进度条
+
+        # 然后再针对当前选择中的org生成报告
+        org= session.get("org")
+        report = ActivityReport(org=f'{org}')
+        columns = ['IDE', 'Copilot-Feature', 'Login']
+        for column in columns:
+            report.print_ide_usage(days=30, column=column)
+            report.print_ide_usage(days=30, column=column,type='bar')
+        ActivityReport.print_daily_active_users(report,days=30)
+
+        print('End of manually refresh Orgs at ' + time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()) )
+
+        # 显示刷新成功; 并提供一个返回主页面的链接，以便用户可以返回主页面
+        return f'Data refreshed successfully! <a href="/">Go back to the homepage</a>'
+    except Exception as e:
+        return f'<a href="/">Go back to the homepage</a> Error occurred when refreshing data:,pls double check the access code {e}'
 
 def get_latest_data():
     """
@@ -184,20 +212,22 @@ def get_latest_data():
     """
     
     while True:
-        # 执行extract_copilot_by_org函数，每10分钟执行一次,不要使用import模式，直接调用module.function()的方式
-        # 首先定期刷新数据
-        # get_usage_byAPI.extract_copilot_by_org(org)
-        # get_usage_byAPI.extract_copilot_by_orgs(['org1','org2'])
-        # orgs=['Baozun-LSD','Lilith-Dislyte','wondershare-2023','qunar-org1']
-        #orgs = orgs_manager.get_orgs('Org_Name')
-        # 修改为获得orgs_info信息，其中包含了所有的org_name,access_code
-        orgs_info = orgs_manager.get_orgs_info()
+        # 增加print 信息，以便了解后台job运行情况
+        print('Start to get latest data from API at ' + time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()) )
+
+        # 每次重新获得orgs_manager的实例，以便里面的数据发生变化
+        orgs_manager_latest = OrgsManager('data/orgs.csv')
+        orgs_info = orgs_manager_latest.get_orgs_info()
         get_usage_byAPI.extract_copilot_by_orgs(orgs_info)
       
         # 每10分钟刷新依次，这一个以后可以修改为从配置文件中读取；现在为了测试，暂时设置为10分钟
-        #time.sleep(10 * 60)
-        # 修改为每12个小时刷新一次， updated by zhuang 2023/9/27
-        time.sleep(12 * 60 * 60)
+        # time.sleep(10 * 60)
+        # 修改为每6个小时刷新一次， updated by zhuang 2023/9/27
+        print('End to get latest data from API at ' + time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()) )
+        print ('Sleep 6 hours to fetch data again \n')
+      
+        # time.sleep(6 * 60 * 60)
+        time.sleep(10 * 60)
 
 
 if __name__ == '__main__':

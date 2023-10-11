@@ -1,11 +1,11 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <center><title>IDE Counts of Organization {{ org }}</title></center>
+    <center><title>Copilot Activity Analysis of Organization {{ org }}</title></center>
 </head>
 <body>
     
-        <h1>please select the Organization</h1>
+        <h1>please select the Organization first! thanks!</h1>
         <form method="Post" action="/">
             <label for="org">Select Organization:</label>
             <select id="org" name="org">
@@ -38,15 +38,17 @@
         <li class="nav-item">
             <a class="nav-link" id="pie-tab" data-toggle="tab" href="#pie" role="tab" aria-controls="pie" aria-selected="false">Pie Chart</a>
         </li> -->
-        <li><a href="/report">Latest Activity Report</a></li>
-        <li><a href="/active_report">Active Report for last 30 days</a></li>
-        <li><a href="/Last_activity_report">Last Activity  Report analysis </a></li>
-        <li><a href="/config">config Organizations</a></li>
-        <a href="/" class="btn btn-primary mt-3">Return to Main Page</a>
+        <li><a href="/report">Who used Copilot just now?</a></li>
+        <li><a href="/active_report">Active Report for last 30 days (Get Details)</a></li>
+        <li><a href="/Last_activity_report">Who are active/who are not?</a></li>
+        <li><a href="/refresh"><strong>(No wait! Fetch data Right Now!)</strong></a></li>
+        
+        <br>
+        <li><a href="/config">Manage & Config Organizations (Add new or remove existing Organizations)</a></li>
+        <!--<li><a href="/" class="btn btn-primary mt-3">Return to Main Page</a></li>-->
 
     </ul>
     <!-- 显示图片 -->
-
     <center><img src="static/{{ selected_org }}/{{ selected_org }}_active_users_byday.png" alt="Active Users By Day"></center>
 
 </body>

@@ -32,6 +32,7 @@ orgs = orgs_manager.get_orgs('Org_Name')
 
 
 
+
  # 这里需要从data/organization.csv中读取组织名;并把组织名保存在orgs中,然后传递给index.html
 # orgs = []
 """ with open('data/organization.csv', mode='r') as file:
@@ -46,7 +47,14 @@ def index():
     """
     # 每次重新获得orgs列表
     orgs = orgs_manager.get_orgs('Org_Name')
-    print('orgs in Index are :',orgs)
+    
+    # 增加一个判断，如果orgs为空，则提醒用户需要首先配置config页面，然后跳转到config页面
+    if len(orgs) == 0:
+        # 页面上，首先弹出一个提示框(alert)，提示用户需要首先配置config页面
+        # 然后跳转到config页面
+        return render_template('config.html', orgs=orgs)
+
+        
     # 如果session中没有org，则默认选取orgs列表中的第一个元素
     org = session.get('org', orgs[0])
     # 如果是post请求，则从请求中获取org，并保存在session中
@@ -55,13 +63,14 @@ def index():
         if 'org' in request.form:
             org = request.form['org']
             session['org'] = org
+    else:
+        session['org'] = org
     print('orgs in Index now are :',orgs)
-    print('org in Index now is :',org)
+    print('Current Org is  :',org)
     # Render the HTML template with the bar and pie charts
     return render_template('index.html', orgs=orgs, selected_org=org)
    # return render_template('index.html', org=f'{org}')
     
-
 @app.route('/set_org')
 def set_org():
     """
@@ -206,33 +215,34 @@ def refresh():
     except Exception as e:
         return f'<a href="/">Go back to the homepage</a> Error occurred when refreshing data:,pls double check the access code {e}'
 
+
 def get_latest_data():
     """
     后台线程，每10分钟从API获取最新的座位使用数据。
     """
     
     while True:
-        # 增加print 信息，以便了解后台job运行情况
-        print('Start to get latest data from API at ' + time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()) )
-
-        # 每次重新获得orgs_manager的实例，以便里面的数据发生变化
+        # 执行extract_copilot_by_org函数，每10分钟执行一次,不要使用import模式，直接调用module.function()的方式
+        # 首先定期刷新数据
+        # get_usage_byAPI.extract_copilot_by_org(org)
+        # get_usage_byAPI.extract_copilot_by_orgs(['org1','org2'])
+        # orgs=['Baozun-LSD','Lilith-Dislyte','wondershare-2023','qunar-org1']
+        #orgs = orgs_manager.get_orgs('Org_Name')
+        # 修改为获得orgs_info信息，其中包含了所有的org_name,access_code
         orgs_manager_latest = OrgsManager('data/orgs.csv')
         orgs_info = orgs_manager_latest.get_orgs_info()
         get_usage_byAPI.extract_copilot_by_orgs(orgs_info)
       
         # 每10分钟刷新依次，这一个以后可以修改为从配置文件中读取；现在为了测试，暂时设置为10分钟
-        # time.sleep(10 * 60)
-        # 修改为每6个小时刷新一次， updated by zhuang 2023/9/27
-        print('End to get latest data from API at ' + time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()) )
-        print ('Sleep 6 hours to fetch data again \n')
-      
-        # time.sleep(6 * 60 * 60)
-        time.sleep(10 * 60)
+        #time.sleep(10 * 60)
+        # 修改为每12个小时刷新一次， updated by zhuang 2023/9/27
+        time.sleep(12 * 60 * 60)
+
 
 
 if __name__ == '__main__':
     #启动job线程
-    job_thread = Thread(target=get_latest_data)
-    job_thread.start()
+    # job_thread = Thread(target=get_latest_data)
+    # job_thread.start()
     #启动Flask应用
     app.run(debug=True)

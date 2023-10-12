@@ -4,18 +4,18 @@
     <center><title>Copilot Activity Analysis of Organization {{ org }}</title></center>
 </head>
 <body>
-    
-        <h1>please select the Organization first! thanks!</h1>
+        <div name='topArea'>
+        <h2 style=" font-size: 36px;  margin-top: 50px;">Please select an organization to view:</h2>
         <form method="Post" action="/">
             <label for="org">Select Organization:</label>
-            <select id="org" name="org">
+            <select id="org" name="org" style="width: 200px; font-size: 18px; ">
                 {% for org in orgs %}
                 <option value="{{ org }}" {% if org == selected_org %}selected{% endif %}>{{ org }}</option>
                 {% endfor %}
             </select>
             <input type="submit" value="Submit">
         </form>
-        <p>Current Selected Organization: <span id="selected-org">{{ selected_org }}</span></p>
+        <p>Current Selected Organization: <span id="selected-org" style="color: red; font-weight: bold;">{{ selected_org }}</span></p>
         <script>
             // 获取下拉框元素
             var select = document.getElementById('org');
@@ -29,8 +29,9 @@
                 document.getElementById('selected-org').textContent = org;
             });
         </script>
-    
-    <center><h1>Daily active users of Organization {{ selected_org }}</h1></center>
+    </div>
+    <div name="CommandArea">
+        <h2 style=" font-size: 36px;  margin-top: 50px;">Please select report as below:</h2>
     <ul class="nav nav-tabs justify-content-center mb-3" id="myTab" role="tablist">
         <!-- <li class="nav-item">
             <a class="nav-link active" id="bar-tab" data-toggle="tab" href="#bar" role="tab" aria-controls="bar" aria-selected="true">Bar Chart</a>
@@ -41,16 +42,19 @@
         <li><a href="/report">Who used Copilot just now?</a></li>
         <li><a href="/active_report">Active Report for last 30 days (Get Details)</a></li>
         <li><a href="/Last_activity_report">Who are active/who are not?</a></li>
-        <li><a href="/refresh"><strong>(No wait! Fetch data Right Now!)</strong></a></li>
+        <li><a href="/refresh"><strong>No wait! Fetch data Right Now!</strong></a></li>
         
         <br>
-        <li><a href="/config">Manage & Config Organizations (Add new or remove existing Organizations)</a></li>
-        <!--<li><a href="/" class="btn btn-primary mt-3">Return to Main Page</a></li>-->
-
-    </ul>
-    <!-- 显示图片 -->
-    <center><img src="static/{{ selected_org }}/{{ selected_org }}_active_users_byday.png" alt="Active Users By Day"></center>
-
+        <li><a href="/config">Config Organizations (Add/Remove)</a></li>
+         <!--<li><a href="/" class="btn btn-primary mt-3">Return to Main Page</a></li>-->
+        </ul>
+    </div>
+    <div name="showArea">
+        <!-- 显示图片 -->
+        <h2 style=" font-size: 36px;  margin-top: 50px;">Daily active users of Organization {{ selected_org }}</h2>
+        <!--<center><h1>Daily active users of Organization {{ selected_org }}</h1></center>-->
+        <center><img src="static/{{ selected_org }}/{{ selected_org }}_active_users_byday.png" alt="Active Users By Day"></center>
+    </div>   
 </body>
     
 </html>

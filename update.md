@@ -90,7 +90,7 @@
 ## Update Notes in 2023/10/11
 - [Feature] update templates/index.html to be more friendly (remove go to main page , As itself is main page)
 - [Feature] update templates/config.html to be use local /JS and /CSS files, instead of using online version, to save time for loading
-
+- [Bug Fix] Set default organization to be the first one in orgs.csv, and set session to it. So that when user open the page, it will show the first organization's data
 
 
 

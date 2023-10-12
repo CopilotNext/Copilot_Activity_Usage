@@ -65,7 +65,7 @@ class OrgsManager:
                     break
         return access_code
     
-    # 增加一个方法，获得组织的组织名，Access_Code
+    # 增加一个方法，获得组织的组织名和Access_Code，以便后续的API调用
     def get_orgs_info(self):
         orgs_info = []
         with open(self.filename, 'r', newline='') as csvfile:

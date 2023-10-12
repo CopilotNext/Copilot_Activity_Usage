@@ -1,6 +1,6 @@
 import schedule
 import time
-from last_activity_report import LastActivityReport
+from active_report import ActivityReport
 from orgs import OrgsManager
 import get_usage_byAPI
 import datetime
@@ -8,6 +8,7 @@ import datetime
 
 def job():
 
+    # 1. Fetch data from github
     print('Start to refresh orgs at ',datetime.datetime.now())
     orgs_manager = OrgsManager('data/orgs.csv')
     orgs_info = orgs_manager.get_orgs_info()
@@ -16,6 +17,26 @@ def job():
         print('Finish to refresh orgs at ',datetime.datetime.now())
     else:
         print('No orgs in orgs.csv')
+
+    # 2. Generate report for each org
+    
+    print('Start to generate report at ',datetime.datetime.now())
+    # need to fetch the first column of orgs_info. for orgs_info, it is an array, each element is an array with two elements
+    # orgs_info = [['org1','access_code1'],['org2','access_code2']]
+    # for org in orgs_info:
+    #     print(org[0])
+    orgs=orgs_manager.get_orgs('Org_Name')
+    for  org in orgs:
+        print(f'Generate report for {org} in {datetime.datetime.now()} backend job')
+        report = ActivityReport(org=f'{org}')
+        columns = ['IDE', 'Copilot-Feature', 'Login']
+        for column in columns:
+            report.print_ide_usage(days=30, column=column)
+            report.print_ide_usage(days=30, column=column,type='bar')
+        ActivityReport.print_daily_active_users(report,days=30)
+        print(f'End of Generate report for {org} in {datetime.datetime.now()} backend job')
+    
+    print('Finish to generate report at ',datetime.datetime.now())
 
 # 每6小时刷新一次
 schedule.every(6).hours.do(job)

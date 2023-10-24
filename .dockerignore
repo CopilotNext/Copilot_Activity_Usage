@@ -25,3 +25,12 @@
 **/values.dev.yaml
 LICENSE
 README.md
+
+# Ignore all files in the data folder except for orgs.csv and the Demo subfolder
+data/*
+!data/orgs.csv
+!data/Demo
+# Ignore all files in the static folder except for *.png and the Demo subfolder
+static/*
+!static/*.png
+!static/Demo

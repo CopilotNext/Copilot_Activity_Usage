@@ -92,6 +92,10 @@
 - [Feature] update templates/config.html to be use local /JS and /CSS files, instead of using online version, to save time for loading
 - [Bug Fix] Set default organization to be the first one in orgs.csv, and set session to it. So that when user open the page, it will show the first organization's data
 
+## Update Notes in 2023/10/24
+- [Feature] upadte dockerignore to only allow data/orgs.csv and data/Demo; static/Demo;
+
+
 
 
 

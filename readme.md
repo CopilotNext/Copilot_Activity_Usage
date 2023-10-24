@@ -19,11 +19,22 @@ The app runs a background thread that periodically fetches the latest seat usage
 
 
 ## Installation
-
-- pip install requirements.txt
-- open app.py, run it
-- then visit http://localhost:5000, select config to add your organizations.
-
+- Run Locally
+    - pip install -r requirements.txt
+    - open app.py, run it
+    - then visit http://localhost:5000, select config to add your organizations.
+ - Run in Docker
+    - docker build -t copilot-usage-report .
+    - docker run -d -p 5000:5000 copilot-usage-report
+    - then visit http://localhost:5000, select config to add your organizations.
+ - Run in Azure (both Rerpot and sync-refresh job)
+    - docker build -t copilot-usage-report .
+    - docker build -t copilot-usage-report-job -f Dockerfile-job .
+    - docker tag copilot-usage-report <your-registry-name>.azurecr.io/copilot-usage-report:v1
+    - docker tag copilot-usage-report-job <your-registry-name>.azurecr.io/copilot-usage-report-job:v1
+    - deploy copilot-usage-report and copilot-usage-job to Azure App Service/Container Apps.
+    - config the App Service/Container Apps to use Azure File Share for /data and /static folder, so that the data can be shared between App Service and Container Apps.
+    - add a orgs.csv file to Azure File Share, and add the orgs you want to monitor.
 ## Usage
 
 - Provide instructions for using your project.

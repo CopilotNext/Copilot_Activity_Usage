@@ -2,11 +2,12 @@
 
 quick report for Github Copilot for business usage in organizations.
 
-it is a quick usage report since there is no outofbox usage report in Github Organizations.
-Since there is API to get the activity, like 'https://api.github.com/orgs/{org}/copilot/billing/seats?per_page=200'
+It is a quick usage report of copilot for busienss within Github Organizations.
+Since there is API to get the latest activity, like 'https://api.github.com/orgs/{org}/copilot/billing/seats?per_page=200'
     
-so by calling the API periodlly- it is 10 minutes by default in hard code now. 
-We save the return as .csv, then extract it by drop dupliate/split the IDE column to more column. finally, generate report.
+By calling the API periodlly- it is 6 hours by default in hard code in refresh_orgs_job.py now. 
+We save the return as .csv, then extract it by dropping dupliate/split the IDE column to more column. finally, generate report. it supports daily active users analysis/Non Active users/Used by IDE/Used by Copilot Features/Develper who used copilot most often.
+And More report will be generated based on feedback, thanks.
 
 ## Features
 
@@ -31,9 +32,12 @@ The app runs a background thread that periodically fetches the latest seat usage
     - docker build -t copilot-usage-report .
     - docker build -t copilot-usage-report-job -f Dockerfile-job .
     - docker tag copilot-usage-report <your-registry-name>.azurecr.io/copilot-usage-report:v1
-    - docker tag copilot-usage-report-job <your-registry-name>.azurecr.io/copilot-usage-report-job:v1
+    - docker tag copilot-usage-report-job <your-registry-name>.azurecr.io/copilot-usage-job:v1
+    - docker push <your-registry-name>.azurecr.io/copilot-usage-report:v1
+    - docker push <your-registry-name>.azurecr.io/copilot-usage-job:v1
+
     - deploy copilot-usage-report and copilot-usage-job to Azure App Service/Container Apps.
-    - config the App Service/Container Apps to use Azure File Share for /data and /static folder, so that the data can be shared between App Service and Container Apps.
+    - config the App Service/Container Apps to use Azure File Share for /data and /static folder, so that the data can be shared between App Service and Container Apps. Form More,please visit:https://docs.microsoft.com/en-us/azure/app-service/configure-connect-to-azure-storage?pivots=container-linux#mount-file-share; and https://learn.microsoft.com/en-us/azure/container-apps/storage-mounts?pivots=azure-portal
     - add a orgs.csv file to Azure File Share, and add the orgs you want to monitor.
 ## Usage
 
@@ -51,8 +55,8 @@ The app runs a background thread that periodically fetches the latest seat usage
 ## Examples
 
 - Provide examples of how to use your project.
-- To check more report, please access http://localhost:5000/active_report
-- To check more report, please access https://copilotreport.chinacloudsites.cn/
+- To check more report locally, please access http://localhost:5000/active_report
+- To check more report, please access https://usage4copilot.azurewebsites.net/
 
 
 
@@ -71,7 +75,9 @@ The app runs a background thread that periodically fetches the latest seat usage
 
 ## Authors
 
-- JunQian Zhuang. Daniel Wang.
+- [DevOps_Zhuang](https://github.com/DevOps-zhuang)
+- [Daniel Wang](https://github.com/nikawang)
+- [JumpStarX](https://github.com/JumpXStar)
 
 ## Acknowledgments
 

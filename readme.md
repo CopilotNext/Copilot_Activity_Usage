@@ -56,14 +56,14 @@ The app runs a background thread that periodically fetches the latest seat usage
 
 - Provide examples of how to use your project.
 - To check more report locally, please access http://localhost:5000/active_report
-- To check more report, please access https://usage4copilot.azurewebsites.net/
+- To check more report, please access https://copilot-usage-report.azurewebsites.net/
 
 
 
 ## API Reference
 
 - If your project includes an API, provide documentation for the API here.
--  https://api.github.com/orgs/{org}/copilot/billing/seats?per_page=200'
+-  https://api.github.com/orgs/{org}/copilot/billing/seats?per_page=200
 
 ## Contributing
 

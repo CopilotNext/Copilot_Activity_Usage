@@ -151,15 +151,24 @@ def config():
     # 如果是POST请求，则获取表单中的组织名
     if request.method == 'POST':
         org =request.form['org']
-        # 创建组织的文件夹
-        os.makedirs(f'static/{org}', exist_ok=True)
-        os.makedirs(f'data/{org}', exist_ok=True)
         # 将组织名写入配置文件
         org_name = request.form['org']
         access_code = request.form['access_code']
         retention_days = int(request.form['log_days'])
         frequence = int(request.form['Refresh_Frequence'])
+        # 根据组织的名字和访问码，通过调用get_usage_byAPI.py中的get_copilot_by_org方法，检查该组织是否配置了Copilot;如果配置了，则返回用户信息，否则返回False
+        try:
+            result = get_usage_byAPI.get_copilot_by_org(org_name, access_code)
+        except Exception as e:
+            return f'<a href="/">Go back to the homepage</a>  Error occurred when checking Copilot:,pls double check the access code {e}  '
+        if not result:
+            return f"<a href='/' >Go back to the homepage</a> You don't have permission to access {org_name}.pls double check the access code"
+
+        
         orgs_manager.add_org(org_name, access_code,frequence,retention_days=retention_days)
+        # 创建组织的文件夹
+        os.makedirs(f'static/{org}', exist_ok=True)
+        os.makedirs(f'data/{org}', exist_ok=True)
        
         # Redirect to the homepage
         orgs = orgs_manager.get_orgs('Org_Name')
@@ -182,7 +191,7 @@ def delete_org():
     # os.rmdir(f'data/{org}')
     # 删除配置文件中的组织名
     orgs_manager.delete_org(org)
-    return f'Organization {org} deleted successfully!'
+    return f'Organization {org} deleted successfully! <a href="/">Go back to the homepage</a> '
 
 @app.route('/refresh', methods=['GET', 'POST'])
 def refresh():

@@ -29,15 +29,18 @@ def get_copilot_by_org(org='YourOrgName',access_token='youraccesscode'):
     'X-GitHub-Api-Version': '2022-11-28'
     }
 
-    # Send the GET request to the API endpoint
-    response = requests.get(url, headers=headers)
+    try:
+        # Send the GET request to the API endpoint
+        response = requests.get(url, headers=headers)
 
-    # 检查返回的response是否是200，如果不是200，就报错
-    if response.status_code != 200:
-        print(f'Org is: {org}')
-        raise Exception(response.status_code, response.text)
+        # 检查返回的response是否是200，如果不是200，就报错
+        if response.status_code != 200:
+            print(f'Org is: {org}')
+            raise Exception(response.status_code, response.text)
+            return None
+    except:
+        print(f'Error: get_copilot_by_org failed, org is {org},pls check your access_token')
         return None
-    
     # Print the response
     print(f"response was got successfully for org: {org}")
     # 返回response
@@ -329,5 +332,5 @@ def extract_copilot_by_orgs(orgs_info):
 # remove_duplicate()
 
 # 调用extract_copilot_by_org函数，每次调用都会把copilot的信息保存到csv文件中
-# extract_copilot_by_org(org)
+# extract_copilot_by_org(org,token)
 

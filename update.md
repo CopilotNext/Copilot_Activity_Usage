@@ -95,6 +95,10 @@
 ## Update Notes in 2023/10/24
 - [Feature] upadte dockerignore to only allow data/orgs.csv and data/Demo; static/Demo;
 
+## Update Notes in 2023/10/31
+- [Feature] UI nice update for idex.html and last_activity.html
+- [Feature] Add strict check when adding new org, only organizatio with copilot can be added
+- [Bug Fix] send page and per_page to get_seats, to avoid only 100 seats returned before. it uses url = f'https://api.github.com/orgs/{org}/copilot/billing/seats?per_page={per_page}&page={page}'
 
 
 

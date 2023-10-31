@@ -160,9 +160,9 @@ def config():
         try:
             result = get_usage_byAPI.get_copilot_by_org(org_name, access_code)
         except Exception as e:
-            return f'<a href="/">Go back to the homepage</a>  Error occurred when checking Copilot:,pls double check the access code {e}  '
+            return f'<a href="/config">Go back to config page</a>  Error occurred when checking Copilot:,pls double check the organization name and access code {e}  '
         if not result:
-            return f"<a href='/' >Go back to the homepage</a> You don't have permission to access {org_name}.pls double check the access code"
+            return f"<a href='/config'>Go back to config page</a> You don't have permission to access {org_name}.pls double check the access code for {org_name}"
 
         
         orgs_manager.add_org(org_name, access_code,frequence,retention_days=retention_days)
@@ -191,7 +191,7 @@ def delete_org():
     # os.rmdir(f'data/{org}')
     # 删除配置文件中的组织名
     orgs_manager.delete_org(org)
-    return f'Organization {org} deleted successfully! <a href="/">Go back to the homepage</a> '
+    return f'Organization {org} deleted successfully! <a href="/config">Go back to config page</a> '
 
 @app.route('/refresh', methods=['GET', 'POST'])
 def refresh():

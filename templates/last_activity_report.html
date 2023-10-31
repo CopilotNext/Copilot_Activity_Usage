@@ -27,8 +27,9 @@
     <center><h1>Last Activity Report for {{ org }}</h1></center>
 
     <h2>Last Activity Usage</h2>
-        <h3>总分配人数是  {{ row_count }} </h3>
-        <h3>当前在使用人数是  {{ row_count_not_null }}</h3>
+        <h3>总分配人数是(Total Seats):  {{ row_count }} </h3>
+        <h3>当前在使用人数是(Active Seats):  {{ row_count_not_null }}</h3>
+        <h3>最近7天未使用过的Seats: {{ login_data|length }}</h3>
         
         <h3>当前使用率如下报表：</h3>
         <div style="display: flex; flex-direction: row;">
@@ -36,7 +37,7 @@
                 <img src="../static/{{ org }}/{{ org }}_Last_Activity_usage.png" alt="Last Activity Usage">
             </div>
             <div style="flex: 1;">
-                <h2>分配后，未使用过Copilot的用户</h2>
+                <h2>分配后，未使用过Copilot的用户 (Assigned and not used seats)</h2>
                 <table>
                     <thead>
                         <tr>
@@ -55,7 +56,7 @@
                 </table>
             </div>
         </div>
-    <h2>Last Activity before  7 Days</h2>
+    <h2>Last Activity before 7 Days</h2>
     <table>
         <thead>
             <tr>

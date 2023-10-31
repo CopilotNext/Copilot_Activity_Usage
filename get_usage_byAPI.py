@@ -19,9 +19,10 @@ import os
 now = datetime.datetime.now()
 
 # 写一个函数，根据org名字，获得这个org下所有分配copilot的信息
-def get_copilot_by_org(org='YourOrgName',access_token='youraccesscode'):
+def get_copilot_by_org(org='YourOrgName',access_token='youraccesscode',page=1,per_page=100):
     # Set the API endpoint and headers,目的地址类似https://api.github.com/orgs/ORG/copilot/billing/seats
-    url = f'https://api.github.com/orgs/{org}/copilot/billing/seats?per_page=200'
+    #url = f'https://api.github.com/orgs/{org}/copilot/billing/seats?page=5&per_page=100'
+    url = f'https://api.github.com/orgs/{org}/copilot/billing/seats?page={page}&per_page={per_page}'
     
     headers = {
     'Authorization': f'token {access_token}',
@@ -42,7 +43,7 @@ def get_copilot_by_org(org='YourOrgName',access_token='youraccesscode'):
         print(f'Error: get_copilot_by_org failed, org is {org},pls check your access_token')
         return None
     # Print the response
-    print(f"response was got successfully for org: {org}")
+    print(f"response was got successfully for org: {org}； page is {page}； per_page is {per_page}")
     # 返回response
     return response.json()
 
@@ -53,40 +54,54 @@ def get_copilot_by_org(org='YourOrgName',access_token='youraccesscode'):
  # 123456,bluefeng,2021-08-25T09:34:20+08:00,vscode
  # csv文件的名字orgname开头，后面跟上日期时间（到分钟级别），比如{orgname}_202108250933.csv
 
-def extract_copilot_by_org(org,access_token):
-
+def extract_copilot_by_org(org, access_token, per_page=100):
     # 调用get_copilot_by_org函数，获得response
     try:
-        data = get_copilot_by_org(org,access_token)
+        data = get_copilot_by_org(org, access_token, page=1, per_page=per_page)
     except:
         print(f'Error: get_copilot_by_org failed, org is {org},pls check your access_token')
         return None
-     
+
     # Check if the data is valid
     if data is None or 'total_seats' not in data or 'seats' not in data:
         print(f'Error: Invalid data - {data}')
         return None
 
-    # 分析response，获得所有分配copilot的id，username，last_activity_at，last_activity_editor
+    # 如果per_page不是1-100的整数,则per_page=100,并打印警告信息
+    if not isinstance(per_page, int) or per_page < 1 or per_page > 100:
+        per_page = 100
+        print('Warning: per_page is not an integer between 1 and 100, per_page is set to 100')
+
     # Extract the total_seats value
     total_seats = data['total_seats']
     print(f'Total seats in {org} in {datetime.datetime.now().strftime("%Y%m%d%H%M")} is {total_seats}')
+
     # 定义一个列表变量，用来保存所有的assignee
     assignees = []
-    # Extract the login and id values for each assignee
-    for seat in data['seats']:
-        id = seat['assignee']['id']
-        login = seat['assignee']['login']
-        last_activity_at = seat['last_activity_at']
-        last_activity_editor = seat['last_activity_editor']
-        # print(f'Login: {login}, ID: {id}')
-        # 把login和id，last_activity_at，last_activity_editor保存到assignees列表中
-        #assignees.append({'login': login, 'id': id, 'last_activity_at': last_activity_at, 'last_activity_editor': last_activity_editor})
-        assignees.append([id, login, last_activity_at, last_activity_editor])
-    # 打印assignees列表
-    # print(assignees)
+
+    ''' 计算需要循环的次数
+    这行Python代码是计算需要多少页来显示所有的座位。这里的total_seats是总座位数，per_page是每页显示的座位数。
+    total_seats // per_page是使用整数除法计算可以完全显示的页数。
+    (total_seats % per_page > 0)是检查是否有剩余的座位不能完全填满一页。如果有剩余的座位，这个表达式的结果是True，在Python中True可以被当作1来处理，所以这会在页数上加一。
+    如果没有剩余的座位，这个表达式的结果是False，在Python中False可以被当作0来处理，所以这不会改变页数。
+    所以，这行代码的结果是需要的总页数。    
+    '''
+    page = total_seats // per_page + (total_seats % per_page > 0)
+
+    for i in range(1, page + 1):
+        # 获取一页数据
+        data = get_copilot_by_org(org, access_token, page=i, per_page=per_page)
+
+        # Extract the login and id values for each assignee
+        for seat in data['seats']:
+            id = seat['assignee']['id']
+            login = seat['assignee']['login']
+            last_activity_at = seat['last_activity_at']
+            last_activity_editor = seat['last_activity_editor']
+            assignees.append([id, login, last_activity_at, last_activity_editor])
+
     # 调用write_assignees_to_csv函数，把assignees列表写入到csv文件中
-    write_assignees_to_csv(assignees,org=org)
+    write_assignees_to_csv(assignees, org=org)
 
 # 把列表assignees写入到csv文件中
 # csv文件的名字{org}开头，后面跟上日期时间（到小时级别），比如{org}_202108250933.csv
@@ -332,5 +347,5 @@ def extract_copilot_by_orgs(orgs_info):
 # remove_duplicate()
 
 # 调用extract_copilot_by_org函数，每次调用都会把copilot的信息保存到csv文件中
-# extract_copilot_by_org(org,token)
+# extract_copilot_by_org('YourOrgName','youraccesscode')
 

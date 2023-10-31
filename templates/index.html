@@ -1,11 +1,11 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <center><title>Copilot Activity Analysis of Organization {{ org }}</title></center>
+    <center><title>Copilot Activity Analysis for Organization {{ org }}</title></center>
 </head>
 <body>
         <div name='topArea'>
-        <h2 style=" font-size: 36px;  margin-top: 50px;">Please select an organization to view:</h2>
+        <h2 style=" font-size: 36px;  margin-top: 50px;">Firstly，Please select an organization and submit:</h2>
         <form method="Post" action="/">
             <label for="org">Select Organization:</label>
             <select id="org" name="org" style="width: 200px; font-size: 18px; ">
@@ -31,29 +31,32 @@
         </script>
     </div>
     <div name="CommandArea">
-        <h2 style=" font-size: 36px;  margin-top: 50px;">Please select report as below:</h2>
-    <ul class="nav nav-tabs justify-content-center mb-3" id="myTab" role="tablist">
-        <!-- <li class="nav-item">
-            <a class="nav-link active" id="bar-tab" data-toggle="tab" href="#bar" role="tab" aria-controls="bar" aria-selected="true">Bar Chart</a>
-        </li>
-        <li class="nav-item">
-            <a class="nav-link" id="pie-tab" data-toggle="tab" href="#pie" role="tab" aria-controls="pie" aria-selected="false">Pie Chart</a>
-        </li> -->
-        <li><a href="/report">Who used Copilot just now?</a></li>
-        <li><a href="/active_report">Active Report for last 30 days (Get Details)</a></li>
-        <li><a href="/Last_activity_report">Who are active/who are not?</a></li>
-        <li><a href="/refresh"><strong>No wait! Fetch data Right Now!</strong></a></li>
-        
-        <br>
-        <li><a href="/config">Config Organizations (Add/Remove)</a></li>
+        <h2 style=" font-size: 36px;  margin-top: 50px;">Welcome to check reports here</h2>
+        <ul class="nav nav-tabs justify-content-center mb-3" id="usersTab" role="tablist">
+            <!-- <li class="nav-item">
+                <a class="nav-link active" id="bar-tab" data-toggle="tab" href="#bar" role="tab" aria-controls="bar" aria-selected="true">Bar Chart</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" id="pie-tab" data-toggle="tab" href="#pie" role="tab" aria-controls="pie" aria-selected="false">Pie Chart</a>
+            </li> -->
+            <li><a href="/report">Who used Copilot just now?</a></li>
+            <li><a href="/active_report">Active Report for last 30 days (Get Details)</a></li>
+            <li><a href="/Last_activity_report">Who are active/who are not?</a></li>
+            <li><a href="/refresh"><strong>No wait! Fetch data Right Now!</strong></a></li>
+        </ul>
+    </div>
+    <div name="ConfigArea">   
+        <h2 style=" font-size: 36px;  margin-top: 50px;">Admin, please config organizations here</h2>
+        <ul class="nav nav-tabs justify-content-center mb-3" id="AdminTab" role="tablist">
+            <li><a href="/config">Config Organizations (Add/Remove)</a></li>
          <!--<li><a href="/" class="btn btn-primary mt-3">Return to Main Page</a></li>-->
         </ul>
     </div>
     <div name="showArea">
         <!-- 显示图片 -->
-        <h2 style=" font-size: 36px;  margin-top: 50px;">Daily active users of Organization {{ selected_org }}</h2>
+        <h2 style=" font-size: 36px;  margin-top: 50px;">Quick view for Daily active users of {{ selected_org }}</h2>
         <!--<center><h1>Daily active users of Organization {{ selected_org }}</h1></center>-->
-        <center><img src="static/{{ selected_org }}/{{ selected_org }}_active_users_byday.png" alt="Active Users By Day"></center>
+        <img src="static/{{ selected_org }}/{{ selected_org }}_active_users_byday.png" alt="Active Seats By Day" style="float: left;">
     </div>   
 </body>
     

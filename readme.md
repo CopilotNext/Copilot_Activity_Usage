@@ -30,9 +30,9 @@ The app runs a background thread that periodically fetches the latest seat usage
     - then visit http://localhost:5000, select config to add your organizations.
  - Run in Azure (both Rerpot and sync-refresh job)
     - docker build -t copilot-usage-report .
-    - docker build -t copilot-usage-report-job -f Dockerfile-job .
+    - docker build -t copilot-usage-job -f Dockerfile-job .
     - docker tag copilot-usage-report <your-registry-name>.azurecr.io/copilot-usage-report:v1
-    - docker tag copilot-usage-report-job <your-registry-name>.azurecr.io/copilot-usage-job:v1
+    - docker tag copilot-usage-job <your-registry-name>.azurecr.io/copilot-usage-job:v1
     - docker push <your-registry-name>.azurecr.io/copilot-usage-report:v1
     - docker push <your-registry-name>.azurecr.io/copilot-usage-job:v1
 

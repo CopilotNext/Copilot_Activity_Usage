@@ -36,22 +36,22 @@ class OrgsManager:
                 orgs.append(row[0])
         return orgs
     
-    def get_orgs(self, column_name):
-        column_index = None
-        orgs = []
-        with open(self.filename, 'r', newline='') as csvfile:
-            reader = csv.reader(csvfile)
-            header = next(reader)  # skip header row
-            for i, name in enumerate(header):
-                if name == column_name:
-                    column_index = i
-                    break
-            if column_index is None:
-                raise ValueError(f'Column "{column_name}" not found')
-            for row in reader:
-                orgs.append(row[column_index])
-            print('orgs:',orgs)
-        return orgs
+    # def get_orgs(self, column_name):
+    #     column_index = None
+    #     orgs = []
+    #     with open(self.filename, 'r', newline='') as csvfile:
+    #         reader = csv.reader(csvfile)
+    #         header = next(reader)  # skip header row
+    #         for i, name in enumerate(header):
+    #             if name == column_name:
+    #                 column_index = i
+    #                 break
+    #         if column_index is None:
+    #             raise ValueError(f'Column "{column_name}" not found')
+    #         for row in reader:
+    #             orgs.append(row[column_index])
+    #         print('orgs:',orgs)
+    #     return orgs
     
     # 增加一个方法，根据组织名获取组织的访问码
     def get_org_access_code(self, org_name):

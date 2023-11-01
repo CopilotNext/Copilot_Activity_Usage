@@ -21,16 +21,28 @@ import csv
 from active_report import ActivityReport
 import get_usage_byAPI
 from last_activity_report import LastActivityReport
-from orgs import OrgsManager
+#from orgs import OrgsManager
+from orgs_manger import MySQLOrgsManager, CSVOrgsManager
+import mysql.connector
 
 
 
 app = Flask(__name__)
 app.secret_key = 'your_secret_key'
-orgs_manager = OrgsManager('data/orgs.csv')
-orgs = orgs_manager.get_orgs('Org_Name')
 
+# 读取配置文件中的组织名
+# orgs_manager = OrgsManager('data/orgs.csv')
+# orgs = orgs_manager.get_orgs('Org_Name')
 
+# 修改为从orgs_manager中读取orgs信息
+file_type = 'mysql'
+if file_type == 'csv':
+    orgs_manager = CSVOrgsManager('data/orgs.csv')
+elif file_type == 'mysql':
+    db_config = {'user': 'zhuang', 'password': 'copilotusage', 'host': 'localhost', 'database': 'copilot_usage'}
+    orgs_manager = MySQLOrgsManager(mysql.connector.connect(**db_config), 'orgs')
+orgs=orgs_manager.get_orgs()
+print('orgs in app.py are :',orgs)
 
 
  # 这里需要从data/organization.csv中读取组织名;并把组织名保存在orgs中,然后传递给index.html
@@ -46,7 +58,7 @@ def index():
     Renders the homepage with a list of organizations and a form to select an organization.
     """
     # 每次重新获得orgs列表
-    orgs = orgs_manager.get_orgs('Org_Name')
+    orgs = orgs_manager.get_orgs()
     
     # 增加一个判断，如果orgs为空，则提醒用户需要首先配置config页面，然后跳转到config页面
     if len(orgs) == 0:
@@ -171,11 +183,11 @@ def config():
         os.makedirs(f'data/{org}', exist_ok=True)
        
         # Redirect to the homepage
-        orgs = orgs_manager.get_orgs('Org_Name')
+        orgs = orgs_manager.get_orgs()
         return render_template('index.html', orgs=orgs)
     else:
         # 读取配置文件中的组织名
-        orgs = orgs_manager.get_orgs('Org_Name')
+        orgs = orgs_manager.get_orgs()
         return render_template('config.html', orgs=orgs)
 
 @app.route('/delete_org', methods=['POST'])
@@ -202,8 +214,13 @@ def refresh():
 
     # 刷新获取最新的数据；刷新过程，请显示一个进度条
     # 首先刷新数据；刷新过程中，显示一个进度条
-        orgs_manager_latest = OrgsManager('data/orgs.csv')
-        orgs_info = orgs_manager_latest.get_orgs_info()
+        if file_type == 'csv':
+            orgs_manager_latest = CSVOrgsManager('data/orgs.csv')
+        elif file_type == 'mysql':
+            db_config = {'user': 'zhuang', 'password': 'copilotusage', 'host': 'localhost', 'database': 'copilot_usage'}
+            orgs_manager_latest = MySQLOrgsManager(mysql.connector.connect(**db_config), 'orgs')
+
+        orgs_info = orgs_manager.get_orgs_info()
         get_usage_byAPI.extract_copilot_by_orgs(orgs_info)
 
         # 显示进度条
@@ -231,15 +248,13 @@ def get_latest_data():
     """
     
     while True:
-        # 执行extract_copilot_by_org函数，每10分钟执行一次,不要使用import模式，直接调用module.function()的方式
-        # 首先定期刷新数据
-        # get_usage_byAPI.extract_copilot_by_org(org)
-        # get_usage_byAPI.extract_copilot_by_orgs(['org1','org2'])
-        # orgs=['Baozun-LSD','Lilith-Dislyte','wondershare-2023','qunar-org1']
-        #orgs = orgs_manager.get_orgs('Org_Name')
-        # 修改为获得orgs_info信息，其中包含了所有的org_name,access_code
-        orgs_manager_latest = OrgsManager('data/orgs.csv')
-        orgs_info = orgs_manager_latest.get_orgs_info()
+        if file_type == 'csv':
+            orgs_manager_latest = CSVOrgsManager('data/orgs.csv')
+        elif file_type == 'mysql':
+            db_config = {'user': 'zhuang', 'password': 'copilotusage', 'host': 'localhost', 'database': 'copilot_usage'}
+            orgs_manager_latest = MySQLOrgsManager(mysql.connector.connect(**db_config), 'orgs')
+
+        orgs_info = orgs_manager.get_orgs_info()
         get_usage_byAPI.extract_copilot_by_orgs(orgs_info)
       
         # 每10分钟刷新依次，这一个以后可以修改为从配置文件中读取；现在为了测试，暂时设置为10分钟

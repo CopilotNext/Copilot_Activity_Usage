@@ -36,9 +36,16 @@ The app runs a background thread that periodically fetches the latest seat usage
     - docker push <your-registry-name>.azurecr.io/copilot-usage-report:v1
     - docker push <your-registry-name>.azurecr.io/copilot-usage-job:v1
 
-    - deploy copilot-usage-report and copilot-usage-job to Azure App Service/Container Apps.
-    - config the App Service/Container Apps to use Azure File Share for /data and /static folder, so that the data can be shared between App Service and Container Apps. Form More,please visit:https://docs.microsoft.com/en-us/azure/app-service/configure-connect-to-azure-storage?pivots=container-linux#mount-file-share; and https://learn.microsoft.com/en-us/azure/container-apps/storage-mounts?pivots=azure-portal
-    - add a orgs.csv file to Azure File Share, and add the orgs you want to monitor.
+    - deploy copilot-usage-report and copilot-usage-job to Azure App Service and Container Apps. You can choose to deploy using only the Container App instead of using the App Service. My deployment has chosen to use two container apps
+      ![1698903064406](https://github.com/nickhou1983/Copilot_Activity_Usage/assets/115772266/93b62d39-2178-4eb9-b959-fa61be44d160)
+
+    - create Azure File Share /data and /static
+      ![1698902784205](https://github.com/nickhou1983/Copilot_Activity_Usage/assets/115772266/89c77936-dd81-464d-9d07-b06b1dbe92f4)
+
+    - config the App Service and Container Apps to mount Azure File Share for /data and /static folder, so that the data can be shared between App Service and Container Apps. Please note that both App Service and Container App require access to these two shared folders. Form More,please visit:https://docs.microsoft.com/en-us/azure/app-service/configure-connect-to-azure-storage?pivots=container-linux#mount-file-share; and https://learn.microsoft.com/en-us/azure/container-apps/storage-mounts?pivots=azure-portal
+      ![1698902904458](https://github.com/nickhou1983/Copilot_Activity_Usage/assets/115772266/9e9729d6-8622-45cc-9677-382007c7c56d)
+      The mounted directory name must be/app/data and /app/static.
+    - add a orgs.csv file to Azure File Share /data folder, and add the orgs you want to monitor.
 ## Usage
 
 - Provide instructions for using your project.

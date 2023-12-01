@@ -5,7 +5,7 @@
 </head>
 <body>
         <div name='topArea'>
-        <h2 style=" font-size: 36px;  margin-top: 50px;">Firstly，Please select an organization and submit:</h2>
+        <h2 style=" font-size: 36px;  margin-top: 50px;">Please select an organization and submit:</h2>
         <form method="Post" action="/">
             <label for="org">Select Organization:</label>
             <select id="org" name="org" style="width: 200px; font-size: 18px; ">
@@ -45,19 +45,24 @@
             <li><a href="/refresh"><strong>No wait! Fetch data Right Now!</strong></a></li>
         </ul>
     </div>
+    <!--
     <div name="ConfigArea">   
         <h2 style=" font-size: 36px;  margin-top: 50px;">Admin, please config organizations here</h2>
         <ul class="nav nav-tabs justify-content-center mb-3" id="AdminTab" role="tablist">
             <li><a href="/config">Config Organizations (Add/Remove)</a></li>
-         <!--<li><a href="/" class="btn btn-primary mt-3">Return to Main Page</a></li>-->
-        </ul>
+         /ul>
     </div>
+    -->
     <div name="showArea">
         <!-- 显示图片 -->
         <h2 style=" font-size: 36px;  margin-top: 50px;">Quick view for Daily active users of {{ selected_org }}</h2>
         <!--<center><h1>Daily active users of Organization {{ selected_org }}</h1></center>-->
         <img src="static/{{ selected_org }}/{{ selected_org }}_active_users_byday.png" alt="Active Seats By Day" style="float: left;">
+        
     </div>   
+    <div name="bottomArea" style="position: fixed; bottom: 0; right: 0; background-color: white; padding: 10px;">
+        <h2 style="font-size: 16px; margin-top: 0;">version:20231201</h2>
+    </div>
 </body>
     
 </html>

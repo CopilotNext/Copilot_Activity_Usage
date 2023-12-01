@@ -16,33 +16,21 @@ import matplotlib.pyplot as plt
 from io import BytesIO
 import os
 from threading import Thread
-import csv
 
-from active_report import ActivityReport
-import get_usage_byAPI
-from last_activity_report import LastActivityReport
-#from orgs import OrgsManager
+from activity_report import ActivityReport
+from latest_activity_report import LastActivityReport
 from orgs_manger import MySQLOrgsManager, CSVOrgsManager
-import mysql.connector
+from create_factory import Factory
+from get_usage_fromGithub import GetUsage_FromGithub
 
 
 
 app = Flask(__name__)
 app.secret_key = 'your_secret_key'
 
-# 读取配置文件中的组织名
-# orgs_manager = OrgsManager('data/orgs.csv')
-# orgs = orgs_manager.get_orgs('Org_Name')
-
-# 修改为从orgs_manager中读取orgs信息
-file_type = 'mysql'
-if file_type == 'csv':
-    orgs_manager = CSVOrgsManager('data/orgs.csv')
-elif file_type == 'mysql':
-    db_config = {'user': 'zhuang', 'password': 'copilotusage', 'host': 'localhost', 'database': 'copilot_usage'}
-    orgs_manager = MySQLOrgsManager(mysql.connector.connect(**db_config), 'orgs')
-orgs=orgs_manager.get_orgs()
-print('orgs in app.py are :',orgs)
+# to get the orgs info from orgs.csv, then call get_usage_fromGithub.py to get the usage info
+orgs_manager = Factory.create_orgs_manager()
+#orgs=orgs_manager.get_orgs()
 
 
  # 这里需要从data/organization.csv中读取组织名;并把组织名保存在orgs中,然后传递给index.html
@@ -68,8 +56,8 @@ def index():
 
         
     # 如果session中没有org，则默认选取orgs列表中的第一个元素
-    org = session.get('org', orgs[0])
     # 如果是post请求，则从请求中获取org，并保存在session中
+    org = session.get('org', orgs[0])
     if request.method == 'POST':
         # 首先判断是否有org参数
         if 'org' in request.form:
@@ -100,22 +88,27 @@ def set_org():
 @app.route('/report')
 def report():
     """
-    Returns an HTML table displaying the first 5 rows of the most recently processed CSV file.
+    Returns an HTML table displaying the first 10 rows of the most recently processed CSV file.
     """
     org= session.get("org")
-    # 读取csv文件并按照Last Activity Date字段排序
-    df = pd.read_csv(f'data/{org}/{org}_activity_details.csv').sort_values(by='Last Activity Date', ascending=False)
-    # 取排序后的前5行并生成报告
-    return render_template('report.html', tables=[df.head().iloc[:, 1:].to_html(classes='data')], titles=df.columns.values[1:])
+    usagedb = Factory.create_usage_db(org)
+    df = pd.DataFrame(usagedb.load_last_activity(), columns=['id', 'Login', 'Last Activity Date', 'Last Editor Used'])
+    # print the column names
+    #print(df.columns)
+    df = df.sort_values(by='Last Activity Date', ascending=False)
+    return render_template('report.html', tables=[df.head(10).iloc[:, 1:].to_html(classes='data',index=False)], titles=df.columns.values[1:])
 
 @app.route('/active_report')
 def active_report():
     """
     Displays the latest activity report for the selected organization.
     """
-    #然后再生成报告
+    # restruct to use ActivityReport class,instead of active_report
     org= session.get("org")
-    report = ActivityReport(org=f'{org}')
+    # to call ActivityReport from activity_report.py;
+
+    usagedb = Factory.create_usage_db(org)
+    report = ActivityReport(org=f'{org}',usage_db=usagedb)
     columns = ['IDE', 'Copilot-Feature', 'Login']
     for column in columns:
         report.print_ide_usage(days=30, column=column)
@@ -133,17 +126,18 @@ def Last_activity_report():
     """
     # 需要从session中读取org信息
     org= session.get("org")
-    print('org:',org)
-    
+
+    # Initialize UsageDB
+    UsageDB = Factory.create_usage_db(org)
     # 创建ActivityReport对象
-    report = LastActivityReport(org=f'{org}')
+    report = LastActivityReport(org=f'{org}',usage_db=UsageDB)
     # 获取最行数，赋值给变量row_count
     row_count =report.row_count
     row_count_not_null = report.row_count_not_null
     # 获得从来没有登录过的用户
     login_null_data = report.print_null_last_activity()
     print(f'login_null_data of org {org} is :',login_null_data)
-    print(f'login_null_data of org {org} is :',login_null_data.count)
+    #print(f'login_null_data of org {org} is :',login_null_data.count)
 
     #获取最近7天未使用的登录数据
     login_data = report.print_last_activity_over_days(days=7)
@@ -156,6 +150,7 @@ def Last_activity_report():
     return render_template('last_activity_report.html', org=f'{org}',login_null_data=login_null_data,login_data=login_data,row_count=f'{row_count}', row_count_not_null=f'{row_count_not_null}')
 
 @app.route('/config', methods=['GET', 'POST'])
+@app.route('/Admin', methods=['GET', 'POST'])  # Add this line
 def config():
     """
     Displays the configuration page where new organizations can be added.
@@ -170,11 +165,11 @@ def config():
         frequence = int(request.form['Refresh_Frequence'])
         # 根据组织的名字和访问码，通过调用get_usage_byAPI.py中的get_copilot_by_org方法，检查该组织是否配置了Copilot;如果配置了，则返回用户信息，否则返回False
         try:
-            result = get_usage_byAPI.get_copilot_by_org(org_name, access_code)
+            result = GetUsage_FromGithub(org_name,access_code).get_copilot_by_org()
         except Exception as e:
             return f'<a href="/config">Go back to config page</a>  Error occurred when checking Copilot:,pls double check the organization name and access code {e}  '
         if not result:
-            return f"<a href='/config'>Go back to config page</a> You don't have permission to access {org_name}.pls double check the access code for {org_name}"
+            return f"<a href='/config'>Go back to config page</a> Access code doesn't match the  {org_name}.pls double check the access code for {org_name}"
 
         
         orgs_manager.add_org(org_name, access_code,frequence,retention_days=retention_days)
@@ -182,12 +177,17 @@ def config():
         os.makedirs(f'static/{org}', exist_ok=True)
         os.makedirs(f'data/{org}', exist_ok=True)
        
-        # Redirect to the homepage
-        orgs = orgs_manager.get_orgs()
-        return render_template('index.html', orgs=orgs)
+        # Redirect to the config page
+        # display a message to say the org was added successfully
+        return f'Organization {org} added successfully! <a href="/config">Go back to config page</a> '
+        #orgs = orgs_manager.get_orgs()
+        #return render_template('config.html', orgs=orgs)
     else:
         # 读取配置文件中的组织名
         orgs = orgs_manager.get_orgs()
+        # Render the HTML template with the list of organizations
+        
+
         return render_template('config.html', orgs=orgs)
 
 @app.route('/delete_org', methods=['POST'])
@@ -207,32 +207,40 @@ def delete_org():
 
 @app.route('/refresh', methods=['GET', 'POST'])
 def refresh():
-
     # 增加try,except,finally语句，以便在刷新数据的过程中，如果出现异常，也可以返回主页面
     try:
         print('Start to manually refresh Orgs at ' + time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()) )
 
-    # 刷新获取最新的数据；刷新过程，请显示一个进度条
-    # 首先刷新数据；刷新过程中，显示一个进度条
-        if file_type == 'csv':
-            orgs_manager_latest = CSVOrgsManager('data/orgs.csv')
-        elif file_type == 'mysql':
-            db_config = {'user': 'zhuang', 'password': 'copilotusage', 'host': 'localhost', 'database': 'copilot_usage'}
-            orgs_manager_latest = MySQLOrgsManager(mysql.connector.connect(**db_config), 'orgs')
-
-        orgs_info = orgs_manager.get_orgs_info()
-        get_usage_byAPI.extract_copilot_by_orgs(orgs_info)
-
-        # 显示进度条
-
-        # 然后再针对当前选择中的org生成报告
+    # 刷新获取最新的数据；update by zhuang on 2023/11/29
+    # 仅仅刷新当前的org (以前是刷新整个orgs)
+        # orgs_info = orgs_manager.get_orgs_info()
+        # get_usage_byAPI.extract_copilot_by_orgs(orgs_info)
+    
         org= session.get("org")
-        report = ActivityReport(org=f'{org}')
+        # 获取当前org的信息，包括access_code等
+        access_token = orgs_manager.get_org_access_code(org)
+        if access_token is None:
+            print(f'access_token is None,pls double check the access code for {org}')
+            return f'<a href="/">Go back to the homepage</a> access_token is None,pls double check the access code for {org}'
+        #access_token=org_info[0]
+        # 调用load_save_Usage.py中的extract_copilot_by_orgs方法，获取当前org的最新数据
+        # Get assignees
+        #assignees = GetUsage_FromGithub(org, access_token).extract_copilot_by_org()
+
+        # Initialize UsageDB
+        UsageDB = Factory.create_usage_db(org)
+        # call save_usage method to fetch data from github and save it to database or csv file
+        UsageDB.save_usage()
+
+     
+        # 然后再针对当前选择中的org生成报告
+        report = ActivityReport(org, UsageDB)
+        #report = ActivityReport(org=f'{org}')
         columns = ['IDE', 'Copilot-Feature', 'Login']
         for column in columns:
             report.print_ide_usage(days=30, column=column)
             report.print_ide_usage(days=30, column=column,type='bar')
-        ActivityReport.print_daily_active_users(report,days=30)
+        report.print_daily_active_users(days=30)
 
         print('End of manually refresh Orgs at ' + time.strftime("%Y-%m-%d %H:%M:%S", time.localtime()) )
 
@@ -248,21 +256,14 @@ def get_latest_data():
     """
     
     while True:
-        if file_type == 'csv':
-            orgs_manager_latest = CSVOrgsManager('data/orgs.csv')
-        elif file_type == 'mysql':
-            db_config = {'user': 'zhuang', 'password': 'copilotusage', 'host': 'localhost', 'database': 'copilot_usage'}
-            orgs_manager_latest = MySQLOrgsManager(mysql.connector.connect(**db_config), 'orgs')
-
-        orgs_info = orgs_manager.get_orgs_info()
-        get_usage_byAPI.extract_copilot_by_orgs(orgs_info)
-      
+        orgs_info = orgs_manager.get_orgs
+        for  org in orgs_info:
+            usagedb = Factory.create_usage_db(org)
+            usagedb.save_usage()
         # 每10分钟刷新依次，这一个以后可以修改为从配置文件中读取；现在为了测试，暂时设置为10分钟
         #time.sleep(10 * 60)
         # 修改为每12个小时刷新一次， updated by zhuang 2023/9/27
         time.sleep(12 * 60 * 60)
-
-
 
 if __name__ == '__main__':
     #启动job线程

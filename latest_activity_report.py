@@ -1,13 +1,25 @@
 import matplotlib
 import pandas as pd
 import matplotlib.pyplot as plt
+# to deal with string covert, need to trace '' in th string to null
+import numpy as np
 
 class LastActivityReport:
-    def __init__(self, org):
+    def __init__(self, org,usage_db):
         self.org = org
-        self.recent_activity = pd.read_csv(f'data/{self.org}/{self.org}_last_activity.csv')
+        #self.recent_activity=usage_db.load_last_activity()
+        #列表转换为 DataFrame;统一规划列名，以解决不同数据源的列名不同
+        self.recent_activity = pd.DataFrame(usage_db.load_last_activity(), columns=['id', 'Login', 'Last Activity Date', 'Last Editor Used'])
+        # print(self.recent_activity)
+        #self.recent_activity = pd.read_csv(f'data/{self.org}/{self.org}_last_activity.csv')
         self.row_count = len(self.recent_activity)
+        # print(f'row_count: {self.row_count}')
+        # print(self.recent_activity['Last Activity Date'].unique())
+        self.recent_activity.replace('', np.nan, inplace=True)
+        # print(self.recent_activity['Last Activity Date'].unique())
         self.row_count_not_null = len(self.recent_activity.dropna(subset=['Last Activity Date']))
+        # print(f'row_count_not_null: {self.row_count_not_null}')
+        self.row_count_null = self.row_count - self.row_count_not_null
     
     def print_null_last_activity(self):
         # 读取recent_activity.csv文件
@@ -31,16 +43,20 @@ class LastActivityReport:
 
         # 首先排除'Last Activity Date'列为空的行
         recent_activity = recent_activity.dropna(subset=['Last Activity Date'])
-
+        # conver the string to datetime
+        # to check the datatype of the column,named 'Last Activity Date'
+        print(recent_activity['Last Activity Date'].dtype)
+        recent_activity['Last Activity Date'] = pd.to_datetime(recent_activity['Last Activity Date'])
         # recent_activity = recent_activity.dropna(subset=['Last Activity Date'])
         #recent_activity['Last Activity Date'] = recent_activity['Last Activity Date'].apply(lambda x: x.split('+')[0])
-        recent_activity.loc[:, 'Last Activity Date'] = recent_activity['Last Activity Date'].apply(lambda x: x.split('+')[0])
+       # recent_activity.loc[:, 'Last Activity Date'] = recent_activity['Last Activity Date'].apply(lambda x: x.split('+')[0])
+        recent_activity.loc[:, 'Last Activity Date'] = recent_activity['Last Activity Date'].apply(lambda x: x.strftime('%Y-%m-%d %H:%M:%S').split('+')[0])
         recent_activity.loc[:, 'Last Activity Date'] = pd.to_datetime(recent_activity['Last Activity Date'])
         # df['Last Activity Date'] = df['Last Activity Date'].str[:19]
 
         # 将'Last Activity Date'列转换为datetime类型
-        recent_activity['Last Activity Date'] = pd.to_datetime(recent_activity['Last Activity Date'])
-
+        #recent_activity['Last Activity Date'] = pd.to_datetime(recent_activity['Last Activity Date'])
+        recent_activity.loc[:, 'Last Activity Date'] = pd.to_datetime(recent_activity['Last Activity Date'])
         # 获取指定天数前的日期
         query_date = pd.Timestamp.now() - pd.Timedelta(days=days)
         print(f"query_date: {query_date}")

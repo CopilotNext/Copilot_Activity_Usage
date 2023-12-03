@@ -1,7 +1,8 @@
-id,Login,Last Activity Date,IDE,IDE Version,Copilot-Feature,Copilot-Version
-id,Login,Last Activity Date,Last Editor Used
 
+id,Login,Last Activity Date,Last Editor Used
 id, Login, Last_Activity_Date, Last_Editor_Used
+
+id,Login,Last Activity Date,IDE,IDE Version,Copilot-Feature,Copilot-Version
 id, Login, Last_Activity_Date, IDE, `IDE Version`, `Copilot-Feature`, `Copilot-Version`
 
 usagedb.load_last_activity()

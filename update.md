@@ -100,6 +100,12 @@
 - [Feature] Add strict check when adding new org, only organizatio with copilot can be added
 - [Bug Fix] send page and per_page to get_seats, to avoid only 100 seats returned before. it uses url = f'https://api.github.com/orgs/{org}/copilot/billing/seats?per_page={per_page}&page={page}'
 
+## Update Notes in 2023/12/1
+- [Feature] Add mysql support for database saving method, so it support CSV and mssql now.
+- [Feature] Add .env support for environment, the env file differs in different environment
+- [Feature] Rearchitecture the project, to make it more clear and easy to understand. especially for the factory pattern,tempalte pattern, and strategy pattern
+
+
 
 
 

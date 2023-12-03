@@ -19,15 +19,30 @@ The app also has a configuration page where new organizations can be added.
 The app runs a background thread that periodically fetches the latest seat usage data from an API.
 
 
+## Update Notes in 2023/12/1
+- [Feature] Add mysql support for database saving method, so it support CSV and mssql now.
+- [Feature] Add .env support for environment, the env file differs in different environment
+- [Feature] Rearchitecture the project, to make it more clear and easy to understand. especially for the factory pattern,tempalte pattern, and strategy pattern
+
 ## Installation
 - Run Locally
     - pip install -r requirements.txt
-    - open app.py, run it
+    - update .env file, to set the environment variables. for development, the env file is .env.dev; for production, the env file is .env.prod
+    - locate app.py, run it
     - then visit http://localhost:5000, select config to add your organizations.
- - Run in Docker
+ - Run in Docker (use file share by default, it will use  app/data and app/static folder)
     - docker build -t copilot-usage-report .
     - docker run -d -p 5000:5000 copilot-usage-report
     - then visit http://localhost:5000, select config to add your organizations.
+ - Run in Docker (use mysql as the database); 
+      - please update the .env file to set the database connection string, at least set DATABASE_TYPE=mysql. 
+      - for the database strings, like username/password, they can be eithor set set it in .env file, or set it in docker run command, like -e DB_HOST=123456 -e DB_DATABASE=copilot -e DB_USER=copilot -e DB_PASSWORD=123456
+      - run docker run -d -p 3306:3306 --name copilot-mysql -e MYSQL_ROOT_PASSWORD=123456 -e MYSQL_DATABASE=copilot -e MYSQL_USER=copilot -e MYSQL_PASSWORD=123456 mysql:latest
+
+    - docker build -t copilot-usage-report .
+    - docker run -d -p 5000:5000 copilot-usage-report
+    - then visit http://localhost:5000, select config to add your organizations.
+    - please update the .env file to set the database connection string, and update the database.sql to create the table.
  - Run in Azure (both Rerpot and sync-refresh job)
     - docker build -t copilot-usage-report .
     - docker build -t copilot-usage-job -f Dockerfile-job .
@@ -39,6 +54,7 @@ The app runs a background thread that periodically fetches the latest seat usage
     - deploy copilot-usage-report and copilot-usage-job to Azure App Service/Container Apps.
     - config the App Service/Container Apps to use Azure File Share for /data and /static folder, so that the data can be shared between App Service and Container Apps. Form More,please visit:https://docs.microsoft.com/en-us/azure/app-service/configure-connect-to-azure-storage?pivots=container-linux#mount-file-share; and https://learn.microsoft.com/en-us/azure/container-apps/storage-mounts?pivots=azure-portal
     - add a orgs.csv file to Azure File Share, and add the orgs you want to monitor.
+
 ## Usage
 
 - Provide instructions for using your project.

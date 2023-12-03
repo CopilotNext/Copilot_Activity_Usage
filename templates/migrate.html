@@ -1,0 +1,24 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>migrate to support mysql</title>
+</head>
+<body>
+    <h1>migrate from csv to mysql</h1>
+    <p>Here are the new features in the latest 20231201 version:</p>
+    <ul>
+        <li>for the database, extend support to mysql</li>
+        <li>support .env format parameters</li>
+        <li>design update</li>
+    </ul>
+    <p>for the migrate:</p>
+    <ul>
+        <li>it will migrate exising configed organizations which are not already set in mysql</li>
+        <li>to migrate, this applicaiton should be set to use mysql in eithor .env or environment parameters.</li>
+        <li>Only organizations settings, previous fetch data are migrated from csv to mysql</li>
+        <li>the latest activity are not overrides by migrate, as we are not sure whether data in csv are most updated</li>
+        <li>if you want to migrate the latest activity, please use refresh, which will reconsile the migrate data with latest data</li>
+    </ul>
+    <button onclick="location.href='/migrate_action'"> Migrate existing CSV data to mysql</button>
+</body>
+</html>

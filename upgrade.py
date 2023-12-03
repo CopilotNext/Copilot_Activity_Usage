@@ -1,8 +1,7 @@
-import mysql.connector
-# BEGIN: qm4f5p8d9c3j
 
 import mysql.connector
 import pandas as pd
+import create_factory
 
 def func_test():
     # Connect to the database
@@ -34,7 +33,7 @@ def func_test():
     cursor.close()
     cnx.close()
 
-# END: qm4f5p8d9c3j
+
 
 import pandas as pd
 import mysql.connector

@@ -248,7 +248,22 @@ def refresh():
         return f'Data refreshed successfully! <a href="/">Go back to the homepage</a>'
     except Exception as e:
         return f'<a href="/">Go back to the homepage</a> Error occurred when refreshing data:,pls double check the access code {e}'
+@app.route('/migrate', methods=['GET', 'POST'])
+def migrate():
+    return render_template('migrate.html')
 
+@app.route('/migrate_action')
+def migrate_action():
+    # call orgs_manager.migrate_from_csv to migrate orgs from csv to mysql
+    orgs_manager.migrate_from_csv()
+    # create orgs_manager from csv. then fetch orgs, for each org, migrate data from csv to mysql
+    orgs_manager_csv = CSVOrgsManager('data/orgs.csv')
+    orgs = orgs_manager_csv.get_orgs()
+    for org in orgs:
+        usagedb_migrate = Factory.create_usage_db(org)
+        usagedb_migrate.migrate_from_csv()
+    
+    return f'migrate successfully! <a href="/">Go back to the homepage</a>'
 
 def get_latest_data():
     """

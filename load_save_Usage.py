@@ -54,6 +54,9 @@ class UsageDB:
     
     def load_usage_byColumn(self,column,days=30):
         raise NotImplementedError
+    # migrate data from csv to mysql, or from mysql to csv
+    def migrate(self):
+        raise NotImplementedError
 
 class MySQL_UsageDB(UsageDB):
     def __init__(self, org_name,connection):
@@ -73,6 +76,71 @@ class MySQL_UsageDB(UsageDB):
         except Exception as e:
             print(f"An error occurred while initializing MySQL tables: {e}")
 
+    def migrate_from_csv(self):
+        # it needs to fetch data from csv, and then insert into mysql; the scope is as below:
+            # for the related csv file, they are named as orgs.csv, {org_name}_{now}_active.csv, {org_name}_{now}_active_details.csv  
+            # for the related mysql table, they are named as orgs, {org_name}_activity, {org_name}_activity_details
+            # we are not going to migrate the data from {org_name}_last_activity.csv to {org_name}_last_activity, because it maybe is the latest data, so it is possible that the data in mysql is newer than the data in csv
+        # for the steps, it will be as below:
+            # 1. get the data from orgs.csv; the columns in csv are Org_Name,Access_Code,Refresh_Frequence,Retetion_Days
+            # 2. save each row to mysql table named orgs. the columns are Org_Name,Access_Code,Refresh_Frequence,Retetion_Days
+            # 3. get the data from {org_name}_activity; the columns in csv are id,Login,Last Activity Date,Last Editor Used
+            # 4. save each row to mysql table named {org_name}_activity. the columns are id, Login, Last_Activity_Date, Last_Editor_Used
+            # 5. get the data from {org_name}_activity_details; the columns in csv are id,Login,Last Activity Date,IDE,IDE Version,Copilot-Feature,Copilot-Version
+            # 6. save each row to mysql table named {org_name}_activity_details. the columns are id, Login, Last_Activity_Date, IDE, `IDE Version`, `Copilot-Feature`, `Copilot-Version`
+        # notes:
+            # 1. the csv file is located in data/{org_name}
+            # 2. the mysql table is named as {org_name}_activity, {org_name}_activity_details
+            # 3.the org_name is replaced by org_name.replace('-', '_') in __init__, so we need to replace it back when fetching data from csv
+        # requirment change and update:
+            # 1. since it is a method of UsageDB, so UsageDB are initialized with org_name, so it will deal with the org_name it gets, not the org_name in orgs.csv
+        # please start to implement it from here
+
+        # 1. get the data from orgs.csv; the columns in csv are Org_Name,Access_Code,Refresh_Frequence,Retetion_Days
+        # 2. save each row to mysql table named orgs. the columns are Org_Name,Access_Code,Refresh_Frequence,Retetion_Days
+        # get the data from orgs.csv
+        # ignore migrate_from_csv for orgs.csv, because it is are consturcted in mysql_orgs_manager part.
+        
+        # replace the org_name back and save it as org_name_original
+        org_name_original = self.org_name.replace('_', '-')
+        path_original=f'data/{org_name_original}'
+        print(f"begin to migrate data for {org_name_original}")
+        # 3. get the data from {org_name}_activity; the columns in csv are id,Login,Last Activity Date,Last Editor Used
+        # 4. save each row to mysql table named {org_name}_activity. the columns are id, Login, Last_Activity_Date, Last_Editor_Used
+        # get the data from {org_name}_activity
+        filename = f"{path_original}/{org_name_original}_activity.csv"
+        print(f"filename for activity is {filename}")
+        # savepath=f'data/{self.org_name}' which is defined in __init__ in UsageDB (base class)
+        # save filtered_assignees to csv
+        if os.path.exists(filename) and os.path.getsize(filename) > 0:
+            with open(filename, mode='r', newline='') as file:
+                reader = csv.reader(file)
+                next(reader)
+                for row in reader:
+                    sql = f"INSERT INTO {self.org_name}_activity (id, Login, Last_Activity_Date, Last_Editor_Used) VALUES (%s, %s, %s, %s)"
+                    values = (row[0], row[1], row[2], row[3])
+                    self.cursor.execute(sql, values)
+                    self.connection.commit()
+        
+        # 5. get the data from {org_name}_activity_details; the columns in csv are id,Login,Last Activity Date,IDE,IDE Version,Copilot-Feature,Copilot-Version
+        # 6. save each row to mysql table named {org_name}_activity_details. the columns are id, Login, Last_Activity_Date, IDE, `IDE Version`, `Copilot-Feature`, `Copilot-Version`
+        # get the data from {org_name}_activity_details
+        filename = f"{path_original}/{org_name_original}_activity_details.csv"
+        print(f"filename for activity_details is {filename}")
+        # savepath=f'data/{self.org_name}' which is defined in __init__ in UsageDB (base class)
+        # save filtered_assignees to csv
+        if os.path.exists(filename) and os.path.getsize(filename) > 0:
+            with open(filename, mode='r', newline='') as file:
+                reader = csv.reader(file)
+                next(reader)
+                for row in reader:
+                    sql = f"INSERT INTO {self.org_name}_activity_details (id, Login, Last_Activity_Date, IDE, `IDE Version`, `Copilot-Feature`, `Copilot-Version`) VALUES (%s, %s, %s, %s, %s, %s, %s)"
+                    self.cursor.execute(sql, row)
+                    self.connection.commit()
+        print(f"End of migrate data for {org_name_original}")
+
+
+    
     def save_usage(self, assignees=None):
         if assignees is None or len(assignees) == 0:
             print(f'Info: No assignees,will fetch from github - {assignees}')

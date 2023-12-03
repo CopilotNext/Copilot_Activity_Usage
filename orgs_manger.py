@@ -41,7 +41,7 @@ class BaseOrgsManager:
     
 class CSVOrgsManager(BaseOrgsManager):
 
-    def __init__(self, filename='orgs'):
+    def __init__(self, filename='data/orgs.csv'):
         super().__init__(filename)
         if not os.path.exists(filename):
             with open(filename, 'w', newline='') as csvfile:
@@ -96,14 +96,17 @@ class CSVOrgsManager(BaseOrgsManager):
         except Exception as e:
             print(f"Error in get_org_Access_Code: {e}")
 
-    def get_orgs_info(self):
+    # to get all columns, use get_orgs_info, it returns a list of list, each list contains the org info. it includes Org_Name, Access_Code, Refresh_Frequence, Retetion_Days
+    # to add an optional parameter named org_name, if org_name is not None, then only return the org info for the org_name
+    def get_orgs_info(self, org_name=None):
         try:
             orgs_info = []
             with open(self.filename, 'r', newline='') as csvfile:
                 reader = csv.reader(csvfile)
                 next(reader)
                 for row in reader:
-                    orgs_info.append([row[0],row[1]])
+                    if org_name is None or row[0] == org_name:
+                        orgs_info.append([row[0], row[1], row[2], row[3]])
             return orgs_info
         except Exception as e:
             print(f"Error in get_orgs_info: {e}")
@@ -123,15 +126,33 @@ class MySQLOrgsManager(BaseOrgsManager):
         ''')
         self.connection.commit()
     
+    def migrate_from_csv(self):
+        try:
+            csv_filename = 'data/orgs.csv'
+            with open(csv_filename, 'r', newline='') as csvfile:
+                reader = csv.reader(csvfile)
+                next(reader)  # skip header row
+                for row in reader:
+                    self.add_org(row[0], row[1], row[2], row[3])
+        except Exception as e:
+            print(f"Error in migrate_from_csv: {e}")
 
     def add_org(self, Org_Name, Access_Code, refresh_frequency=60, retention_days=7):
         try:
+            # check if Org_Name already exists
+            sql_check = f"SELECT Org_Name FROM {self.filename} WHERE Org_Name = %s"
+            self.cursor.execute(sql_check, (Org_Name,))
+            result = self.cursor.fetchone()
+            if result:
+                print(f"Org_Name '{Org_Name}' already exists. Skipping insert.")
+                return
             
             # insert into mysql orgs table
-            sql = f"INSERT INTO {self.filename} (Org_Name, Access_Code, Refresh_Frequence, Retetion_Days) VALUES (%s, %s, %s, %s)"
+            sql_insert = f"INSERT INTO {self.filename} (Org_Name, Access_Code, Refresh_Frequence, Retetion_Days) VALUES (%s, %s, %s, %s)"
             values = (Org_Name, Access_Code, refresh_frequency, retention_days)
-            self.cursor.execute(sql, values)
+            self.cursor.execute(sql_insert, values)
             self.connection.commit()
+            
             # call add_org from base class to create folders, for log and debug.
             super().add_org(Org_Name, Access_Code, refresh_frequency, retention_days)
         except Exception as e:
